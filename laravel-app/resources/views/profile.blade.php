@@ -105,71 +105,37 @@
       </symbol>
     </svg>
 
-    <!-- <div class="dropdown position-fixed bottom-0 end-0 mb-3 me-3 bd-mode-toggle">
-      <button class="btn btn-bd-primary py-2 dropdown-toggle d-flex align-items-center"
-              id="bd-theme"
-              type="button"
-              aria-expanded="false"
-              data-bs-toggle="dropdown"
-              aria-label="Toggle theme (auto)">
-        <svg class="bi my-1 theme-icon-active" width="1em" height="1em"><use href="#circle-half"></use></svg>
-        <span class="visually-hidden" id="bd-theme-text">Toggle theme</span>
-      </button>
-      <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="bd-theme-text">
-        <li>
-          <button type="button" class="dropdown-item d-flex align-items-center" data-bs-theme-value="light" aria-pressed="false">
-            <svg class="bi me-2 opacity-50 theme-icon" width="1em" height="1em"><use href="#sun-fill"></use></svg>
-            Light
-            <svg class="bi ms-auto d-none" width="1em" height="1em"><use href="#check2"></use></svg>
-          </button>
-        </li>
-        <li>
-          <button type="button" class="dropdown-item d-flex align-items-center" data-bs-theme-value="dark" aria-pressed="false">
-            <svg class="bi me-2 opacity-50 theme-icon" width="1em" height="1em"><use href="#moon-stars-fill"></use></svg>
-            Dark
-            <svg class="bi ms-auto d-none" width="1em" height="1em"><use href="#check2"></use></svg>
-          </button>
-        </li>
-        <li>
-          <button type="button" class="dropdown-item d-flex align-items-center active" data-bs-theme-value="auto" aria-pressed="true">
-            <svg class="bi me-2 opacity-50 theme-icon" width="1em" height="1em"><use href="#circle-half"></use></svg>
-            Auto
-            <svg class="bi ms-auto d-none" width="1em" height="1em"><use href="#check2"></use></svg>
-          </button>
-        </li>
-      </ul>
-    </div> -->
-
     
 <main class="form-signin w-100 m-auto">
-  <form id = "Login" name="Login" method="POST" action="">
+<div class="alert alert-danger" id="error-msg" style="display:none"></div>
+  <form id = "Register" name="Register" method="POST" action="">
     
-    <h1 class="h3 mb-3 fw-normal">Please sign in</h1>
+    <h1 class="h3 mb-3 fw-normal">Profile</h1>
+
+    <div class="form-floating">
+      <input type="text" name ="name" class="form-control" id="name" placeholder="Name" value="{{ $user[0]->name }}">
+      <label for="floatingInput">Name</label>
+    </div>
 
     <div class="form-floating">
       <input type="email" name ="email" class="form-control" id="email" placeholder="name@example.com">
       <label for="floatingInput">Email address</label>
     </div>
+
     <div class="form-floating">
       <input type="password" class="form-control" id="password" name = "password"  placeholder="Password">
       <label for="floatingPassword">Password</label>
     </div>
 
-    <!-- <div class="form-check text-start my-3">
-      <input class="form-check-input" type="checkbox" value="remember-me" id="flexCheckDefault">
-      <label class="form-check-label" for="flexCheckDefault">
-        Remember me
-      </label>
-    </div> -->
-    <button class="btn btn-primary w-100 py-2" type="submit">Sign in</button>
-
-    <div class="text-start my-3">
-      <label class="form-check-label" for="flexCheckDefault"> <a href="/register">Register</a> <br/></label>
+    <div class="form-floating">
+      <input type="password" class="form-control" id="c_password" name = "c_password"  placeholder="Confirm Password">
+      <label for="floatingPassword">Confirm Password</label>
     </div>
+    <button class="btn btn-primary w-100 py-2" type="submit">Sign Up</button>
 
     <p class="mt-5 mb-3 text-body-secondary">&copy; 2017–2023</p>
   </form>
-  <div id="error-msg"></div>
+  
 </main>
     <script src = "https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
     <script src="assets/dist/js/bootstrap.bundle.min.js"></script>
@@ -177,10 +143,10 @@
       $(document).ready(function () {
         var URL = "http://127.0.0.1:8000/api/";
         var APP_URL = "http://127.0.0.1:8000/";
-        $("#Login").submit(function(e){
+        $("#Register").submit(function(e){
           e.preventDefault(); 
           //var name = 
-          var form_data = $('#Login').serialize();
+          var form_data = $('#Register').serialize();
           //var aaa = JSON.stringify(form_data)
 
          
@@ -188,9 +154,9 @@
           $.ajax({
                 type:'POST',
                 headers: {
-  'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-  },
-                url:URL+'login',
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                url:URL+'register',
                 //data:{_token : $('meta[name="csrf-token"]').attr('content'), form_data},
                 data:form_data,
                 success:function(data) { 
@@ -198,6 +164,7 @@
                  // console.log(data); return false;
                   if(!data.success){
                     $("#error-msg").html(res_data.message);
+                    setTimeout(function(){ $("#error-msg").hide(); }, 3000);
                   }else{
                     console.log("token# " +data.data.token);
                     console.log("msg# " +data.message);
@@ -209,7 +176,13 @@
                     window.location.href = APP_URL+ "dashboard";   
                   }
                   
-                }
+                },
+                error:function (data) {
+                    console.log(data.responseJSON.message);
+                    $("#error-msg").show();
+                    $("#error-msg").html(data.responseJSON.message);
+                    setTimeout(function(){ $("#error-msg").hide(); }, 3000);
+                },
               });
         });
     });
