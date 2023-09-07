@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Console\Commands;
-
+use Exception;
 use App\Models\Task;
 use App\Models\User;
 use Illuminate\Console\Command;
@@ -41,20 +41,6 @@ class SendReminderEmails extends Command
         $this->sendEmailToUser($reminders);
        }
 
-    //    foreach($data as $userId => $reminders){
-    //     $this->sendEmailToUser($userId, $reminders);
-    // }
-      
-       
-    //    $userArray = [];
-    //    foreach($users as $user){
-    //     $userArray[$user->id] = $user->toArray();
-    //    }
-    //    foreach($userArray as $user){
-    //     foreach($data as $userId => $reminders){
-    //         $this->sendEmailToUser($userId, $reminders);
-    //     }
-    //    }
        //Send email to user
 
       
@@ -64,8 +50,16 @@ class SendReminderEmails extends Command
 
         //Get Users 
         $users = User::get();
-        foreach($users as $user){
-            Mail::to($user)->send(new ReminderEmailDigest($reminders));     
+        try{
+            foreach($users as $user){ 
+                foreach($reminders as $reminder){
+                    Mail::to($user)->send(new ReminderEmailDigest($reminder));     
+                }
+                
+            }
+        }catch (\Exception $e) {
+
+            return $e->getMessage();
         }
        
     }
